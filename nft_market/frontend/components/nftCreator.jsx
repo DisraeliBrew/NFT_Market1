@@ -4,6 +4,7 @@ import { Contract } from "alchemy-sdk";
 import { useCallback, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { useAccount, useSigner } from "wagmi";
+import { ethers } from 'ethers';
 
 
 // React component for NFT creator form
@@ -59,11 +60,15 @@ export default function NftCreator({ contractAddress, abi }) {
     try {
       const NFTContract = new Contract(contractAddress, abi, signer);
       const metadataURL = await generateMetadata();
-      const mintTx = await NFTContract.createToken(metadataURL, address);
+      const mintTx = await NFTContract.createToken(metadataURL, ethers.utils.parseEther(NFTPrice), {
+        value: ethers.utils.parseEther('0.01'),
+        gasLimit: 1000000
+      });
       setTxHash(mintTx.hash);
       await mintTx.wait();
       setTxHash(null);
     } catch (e) {
+      setIsSubmitting(false);
       console.log(e);
     }
   };
