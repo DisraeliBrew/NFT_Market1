@@ -55,9 +55,8 @@ contract MarketContract is ERC721URIStorage {
         uint256 newTokenId = _tokenIds.current();
 
         _safeMint(msg.sender, newTokenId); // mints a token for caller
-        _setTokenURI(newTokenId, tokenURI);
 
-        listToken(newTokenId, price);
+        listToken(newTokenId, tokenURI, price);
 
         emit TokenCreated(newTokenId, msg.sender, tokenURI);
 
@@ -65,15 +64,17 @@ contract MarketContract is ERC721URIStorage {
     }
 
     // List a token
-    function listToken(uint256 tokenId, uint256 price) private {
+    function listToken(uint256 tokenId, string memory tokenURI, uint256 price) private {
         require(tokenId > 0, "Token ID can not be 0");
         require(tokenId <= _tokenIds.current(), "Token ID not in range");
         require(msg.value == _listPrice, "Must pay for listing price");
         require(price > 0, "Token price must be positive");
 
+        _setTokenURI(tokenId, tokenURI);
         _tokens[tokenId].owner = payable(msg.sender);
         _tokens[tokenId].price = price;
         _tokens[tokenId].listing = true;
+
 
         _transfer(msg.sender, address(this), tokenId); // transfer to this contract for permission to sell
 
