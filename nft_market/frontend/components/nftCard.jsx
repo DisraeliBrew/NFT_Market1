@@ -1,14 +1,16 @@
 import styles from '../styles/nftCard.module.css'
 export default function NftCard({ nft }) {
     return (
+       
       <div className={styles.card_container}>
+         {console.log(nft)}
         <div className={styles.image_container}>
           {nft.format == "mp4" ? (
             <video src={nft.media} controls>
               Your browser does not support the video tag.
             </video>
           ) : (
-            <img src={nft.media}></img>
+            <img src={nft.media[0]['gateway']}></img>
           )}
         </div>
         <div className={styles.info_container}>
@@ -32,8 +34,7 @@ export default function NftCard({ nft }) {
             </div>
             <div className={styles.contract_container}>
               <p className={styles.contract_container}>
-                {nft.contract?.slice(0, 6)}...
-                {nft.contract?.slice(38)}
+                {nft['contract']['address']}
               </p>
               <img
                 src={
