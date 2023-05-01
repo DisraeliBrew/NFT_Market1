@@ -92,7 +92,7 @@ contract MarketContract is ERC721URIStorage {
         for(uint i = 0; i < nftCount; i++)
         {
             Token storage currentItem = _tokens[i + 1];
-            tokens[i - 1] = currentItem;
+            tokens[i] = currentItem;
         }
 
         return tokens;
