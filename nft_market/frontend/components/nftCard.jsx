@@ -3,7 +3,7 @@ export default function NftCard({ nft }) {
     return (
        
       <div className={styles.card_container}>
-         {console.log(nft)}
+        
         <div className={styles.image_container}>
           {nft.format == "mp4" ? (
             <video src={nft.media} controls>

@@ -15,12 +15,6 @@ export default function NFTGallery({}) {
   const [chain, setChain] = useState(process.env.NEXT_PUBLIC_ALCHEMY_NETWORK);
   const [reqOptions,setreqOptions] = useState("owner")
 const [request,setRequest] = useState("getNftsForOwner");
-  const settings = {
-    apiKey: "demo", // Replace with your Alchemy API Key.
-    network: Network.ETH_MAINNET, // Replace with your network.
-  };
-
-  const alchemy = new Alchemy(settings);
   const changeFetchMethod = (e) => {
     setNfts()
     setPageKey()
@@ -67,7 +61,6 @@ const [request,setRequest] = useState("getNftsForOwner");
     //       excludeFilter: spamFilter,
     //     }),
     //   }).then((res) => res.json());
-    console.log(reqOptions);
     var requestOptions = {
         method: 'GET'
       };
@@ -75,20 +68,22 @@ const [request,setRequest] = useState("getNftsForOwner");
     // const baseURL = `https://eth-mainnet.g.alchemy.com/v2/${api_key}/${request}/`;
     // const fetchURL = `${baseURL}?contractAddress=${walletOrCollectionAddress}&withMetadata=${"true"}`;
     // const nfts = await fetch(fetchURL,requestOptions).then(data => data.json())
-        const api_key = "lgwXa7iMrjuK7hJOl_S6Wwga7AzExdxZ"
+        const api_key = process.env.ALCHEMY_API_KEY//"lgwXa7iMrjuK7hJOl_S6Wwga7AzExdxZ"
+    //console.log(process.env.ALCHEMY_API_KEY);
     // const baseURL = `https://eth-mainnet.g.alchemy.com/v2/${api_key}/"getNftsForCollection/`;
     // const fetchURL = `${baseURL}?$contractAddress=${walletOrCollectionAddress}&withMetadata=${"true"}`;
     // const res = await fetch(fetchURL, requestOptions).then(data => data.json())
     const baseURL = `https://eth-mainnet.g.alchemy.com/v2/${api_key}/${request}/`;
     const fetchURL = `${baseURL}?${reqOptions}=${walletOrCollectionAddress}&withMetadata=${"true"}`;
     const res = await fetch(fetchURL, requestOptions).then(data => data.json())
-
-      console.log(res);
-      if (nfts?.length && pageKey) {
-        setNfts((prevState) => [...prevState, ...res.nfts]);
-      } else {
-        setNfts();
+    let flag;
+    request == "getNFTsForOwner" ? flag = true : flag = false
+    console.log(flag);
+      if (!flag) {
+        console.log("here2");
         setNfts(res.nfts);
+      } else {
+        setNfts(res.ownedNfts);
       }
       if (res.pageKey) {
         setPageKey(res.pageKey);
@@ -98,7 +93,7 @@ const [request,setRequest] = useState("getNftsForOwner");
     } catch (e) {
       console.log(e);
     }
-
+    console.log(nfts);
     setIsloading(false);
   };
 
