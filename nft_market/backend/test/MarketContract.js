@@ -50,4 +50,22 @@ describe("Token contract", function () {
         const tx = await contract.ownerOf(1);
         expect(tx).to.equal(buyer.address);
     });
+
+    it("Should get all tokens in an array", async function () {
+        const [owner, seller, buyer] = await ethers.getSigners();
+
+        const Token = await ethers.getContractFactory("MarketContract");
+        const contract = await Token.deploy();
+
+        const uri = "/";
+        const price = ethers.utils.parseEther('0.01');
+
+        await contract.connect(seller).createToken(uri, price, { value: ethers.utils.parseEther('0.01') });
+        await contract.connect(buyer).executeSale(1, { value: price});
+        await contract.connect(seller).createToken(uri, price, { value: ethers.utils.parseEther('0.01') });
+
+        const tx = await contract.getAllTokens();
+
+        expect(tx.length).to.equal(2);
+    });
 });
