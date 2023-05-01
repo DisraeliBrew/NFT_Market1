@@ -61,15 +61,19 @@ const [request,setRequest] = useState("getNftsForOwner");
     //       excludeFilter: spamFilter,
     //     }),
     //   }).then((res) => res.json());
-    console.log(fetchMethod);
+    console.log(request);
     var requestOptions = {
         method: 'GET'
       };
-    //const api_key ="lgwXa7iMrjuK7hJOl_S6Wwga7AzExdxZ"
-    const baseURL = `https://eth-mainnet.g.alchemy.com/v2/${process.env.ALCHEMY_API_KEY}/${request}/`;
+    // const api_key ="lgwXa7iMrjuK7hJOl_S6Wwga7AzExdxZ"
+    // const baseURL = `https://eth-mainnet.g.alchemy.com/v2/${api_key}/${request}/`;
+    // const fetchURL = `${baseURL}?contractAddress=${walletOrCollectionAddress}&withMetadata=${"true"}`;
+    // const nfts = await fetch(fetchURL,requestOptions).then(data => data.json())
+        const api_key = "A8A1Oo_UTB9IN5oNHfAc2tAxdR4UVwfM"
+    const baseURL = `https://eth-mainnet.g.alchemy.com/v2/${api_key}/getNFTsForCollection/`;
     const fetchURL = `${baseURL}?contractAddress=${walletOrCollectionAddress}&withMetadata=${"true"}`;
-    const nfts = await fetch(fetchURL,requestOptions).then(data => data.json())
-      console.log(nfts);
+    const res = await fetch(fetchURL, requestOptions).then(data => data.json())
+      console.log(res);
       if (nfts?.length && pageKey) {
         setNfts((prevState) => [...prevState, ...res.nfts]);
       } else {
