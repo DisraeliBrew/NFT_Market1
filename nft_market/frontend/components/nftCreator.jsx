@@ -16,9 +16,7 @@ export default function NftCreator({ contractAddress, abi }) {
   const [imageFile, setImageFile] = useState();
   const [NFTName, setNFTName] = useState();
   const [NFTDescription, setNFTDescription] = useState();
-  const [NFTAttributes, setNFTAttributes] = useState([
-    { trait_type: "", value: "" },
-  ]);
+  const [NFTPrice, setNFTPrice] = useState();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState(false);
 
@@ -28,8 +26,7 @@ export default function NftCreator({ contractAddress, abi }) {
       !imageFile ||
       !NFTName ||
       !NFTDescription ||
-      !NFTAttributes[0].trait_type ||
-      !NFTAttributes[0].value
+      !NFTPrice
     );
   };
 
@@ -49,24 +46,6 @@ export default function NftCreator({ contractAddress, abi }) {
     onDrop,
   });
 
-  // Functions for adding, updating, and removing NFT attributes
-  const addAttribute = () => {
-    const attribute = { trait_type: "", value: "" };
-    setNFTAttributes([...NFTAttributes, attribute]);
-  };
-
-  const subtractAttribute = (index) => {
-    const attributes = [...NFTAttributes];
-    attributes.splice(index, index);
-    setNFTAttributes(attributes);
-  };
-
-  const updateAttribute = (parameter, value, index) => {
-    const attributes = [...NFTAttributes];
-    attributes[index][parameter] = value;
-    setNFTAttributes(attributes);
-  };
-
   // Function for minting the NFT and generating metadata
   const mintNFT = async () => {
     if (formNotFilled()) {
@@ -80,13 +59,12 @@ export default function NftCreator({ contractAddress, abi }) {
     try {
       const NFTContract = new Contract(contractAddress, abi, signer);
       const metadataURL = await generateMetadata();
-      const mintTx = await NFTContract.safeMint(metadataURL, address);
+      const mintTx = await NFTContract.createToken(metadataURL, address);
       setTxHash(mintTx.hash);
       await mintTx.wait();
       setTxHash(null);
     } catch (e) {
       console.log(e);
-      return;
     }
   };
   // Async function to generate metadata for the NFT
@@ -105,9 +83,9 @@ export default function NftCreator({ contractAddress, abi }) {
     // Create a metadata object with the NFT's description, image file URL, name, and attributes
     const metadata = {
       description: NFTDescription,
+      price: NFTPrice,
       image: fileURL,
       name: NFTName,
-      attributes: NFTAttributes,
     };
 
     // Send a POST request to the api/pinJsonToIpfs.js to store the NFT metadata on IPFS
@@ -180,65 +158,22 @@ export default function NftCreator({ contractAddress, abi }) {
               <p>{NFTDescription}</p>
             )}
           </div>
-          {/* Dynamic attribute input fields */}
-          <>
-            {NFTAttributes &&
-              NFTAttributes.map((attribute, index) => {
-                return (
-                  <div key={index} className={styles.attributes_container}>
-                    <div className={styles.attributes_input_container}>
-                      <div className={styles.attribute_input_group}>
-                        {/* Input field for attribute name */}
-                        <h3 className={styles.attribute_input_label}>
-                          ATTRIBUTE NAME
-                        </h3>
-                        <input
-                          className={styles.attribute_input}
-                          value={attribute.traitType}
-                          placeholder={"Background"}
-                          onChange={(e) =>
-                            updateAttribute("trait_type", e.target.value, index)
-                          }
-                        ></input>
-                      </div>
-                      <div className={styles.attribute_input_group}>
-                        {/* Input field for attribute value */}
-                        <h3 className={styles.attribute_input_label}>
-                          ATTRIBUTE VALUE
-                        </h3>
-                        <input
-                          className={styles.attribute_input}
-                          value={attribute.value}
-                          placeholder={"White"}
-                          onChange={(e) =>
-                            updateAttribute("value", e.target.value, index)
-                          }
-                        ></input>
-                      </div>
-                      {/* Subtract attribute button */}
-                      {!txHash ? (
-                        <div className={styles.subtract_button_container}>
-                          <img
-                            onClick={() => subtractAttribute(index)}
-                            className={styles.minus_circle}
-                            src="https://static.alchemyapi.io/images/cw3d/Icon%20Dark/Small/minus-circle-contained-s.svg"
-                            alt=""
-                          />
-                        </div>
-                      ) : null}
-                    </div>
-                  </div>
-                );
-              })}
-          </>
+          {/* Input field for NFT price */}
+          <div className={styles.input_group}>
+            <h3 className={styles.input_label}>PRICE</h3>
+            {!txHash ? (
+                <input
+                    type="number"
+                    className={styles.input}
+                    onChange={(e) => setNFTPrice(e.target.value)}
+                    value={NFTPrice}
+                    placeholder="NFT Price"
+                />
+            ) : (
+                <p>{NFTPrice}</p>
+            )}
+          </div>
 
-          {!txHash ? (
-            <div className={styles.button_container}>
-              <div className={styles.button} onClick={() => addAttribute()}>
-                Add attribute
-              </div>
-            </div>
-          ) : null}
           <div>
             {isDisconnected ? (
               <p>Connect your wallet to get started</p>
