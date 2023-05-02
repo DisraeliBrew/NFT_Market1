@@ -49,26 +49,21 @@ export default async function handler(req, res) {
       formData.append("pinataOptions", options);
 
       // Send a POST request to pin the file to IPFS using Pinata API
-      const cid = await fetch(
-        "https://api.pinata.cloud/pinning/pinFileToIPFS",
-        {
-          method: "POST",
-          body: formData,
-          headers: {
-            // Pass in authorization token to access Pinata API
-            Authorization: `Bearer ${process.env.PINATA_JWT}`,
-          },
-        }
-      )
-        .then((res) => res.json())
-        .then((res) => {
-          return res.IpfsHash;
-        });
+      const cid = await fetch("https://api.pinata.cloud/pinning/pinFileToIPFS", {
+        method: "POST", body: formData, headers: {
+          // Pass in authorization token to access Pinata API
+          Authorization: `Bearer ${process.env.PINATA_JWT}`,
+        },
+      })
+          .then((res) => res.json())
+          .then((res) => {
+            return res.IpfsHash;
+          });
 
       // Return the file URL for the pinned image
       res
-        .status(200)
-        .send({ fileURL: `https://gateway.pinata.cloud/ipfs/${cid}` });
+          .status(200)
+          .send({ fileURL: `https://gateway.pinata.cloud/ipfs/${cid}` });
     } catch (e) {
       console.log(e);
       res.status(500).send({
