@@ -4,8 +4,8 @@ const { expect } = require("chai");
 describe("Token contract", function () {
     let owner, seller, buyer;
     let contract;
+    let listingPrice;
 
-    const listingPrice = ethers.utils.parseEther('0.01');
     const uri = "/";
     const nftPrice = ethers.utils.parseEther('0.01');
 
@@ -13,6 +13,7 @@ describe("Token contract", function () {
         [owner, seller, buyer] = await ethers.getSigners();
         const Token = await ethers.getContractFactory("MarketContract");
         contract = await Token.deploy();
+        listingPrice = await contract.getListPrice();
     });
 
     it("Minted token should be owned by account", async function () {
