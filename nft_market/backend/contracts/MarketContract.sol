@@ -49,17 +49,18 @@ contract MarketContract is ERC721URIStorage {
         return _listPrice;
     }
 
-    // Mint a token and list it with tokenURI from IPFS and returns the token id
-    function createToken(string memory tokenURI) public payable returns (uint) {
+    // Mint a token for a specific address
+    function createToken(address creator, string memory tokenURI) public payable returns (uint) {
+        require(msg.sender == _owner, "Only contract owner can mint token");
         _tokenIds.increment(); // first token id == 1
         uint256 newTokenId = _tokenIds.current();
 
-        _safeMint(msg.sender, newTokenId); // mints a token for caller
+        _safeMint(creator, newTokenId); // mints a token for creator
 
         _setTokenURI(newTokenId, tokenURI);
-        _tokens[newTokenId].owner = payable(msg.sender);
+        _tokens[newTokenId].owner = payable(creator);
 
-        emit TokenCreated(newTokenId, msg.sender, tokenURI);
+        emit TokenCreated(newTokenId, creator, tokenURI);
 
         return newTokenId;
     }
