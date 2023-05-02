@@ -1,5 +1,5 @@
 import { ConnectButton } from "@rainbow-me/rainbowkit";
-import styles from "../../styles/Navbar.module.css";
+import styles from "../../styles/Navbar.module.css"; 
 export default function Navbar() {
 	return (
 		<nav className={styles.navbar}>
@@ -7,6 +7,7 @@ export default function Navbar() {
 				<img className={styles.alchemy_logo} src="/cw3d-logo.png"></img>
 			</a>
 			<ConnectButton></ConnectButton>
+			
 		</nav>
 	);
 }
