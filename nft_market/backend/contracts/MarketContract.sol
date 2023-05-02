@@ -50,13 +50,14 @@ contract MarketContract is ERC721URIStorage {
     }
 
     // Mint a token and list it with tokenURI from IPFS and returns the token id
-    function createToken(string memory tokenURI, uint256 price) public payable returns (uint) {
+    function createToken(string memory tokenURI) public payable returns (uint) {
         _tokenIds.increment(); // first token id == 1
         uint256 newTokenId = _tokenIds.current();
 
         _safeMint(msg.sender, newTokenId); // mints a token for caller
 
-        listToken(newTokenId, tokenURI, price);
+        _setTokenURI(newTokenId, tokenURI);
+        _tokens[newTokenId].owner = payable(msg.sender);
 
         emit TokenCreated(newTokenId, msg.sender, tokenURI);
 
@@ -64,25 +65,27 @@ contract MarketContract is ERC721URIStorage {
     }
 
     // List a token
-    function listToken(uint256 tokenId, string memory tokenURI, uint256 price) private {
+    function listToken(uint256 tokenId, string memory tokenURI, uint256 price) public payable returns (uint) {
         require(tokenId > 0, "Token ID can not be 0");
         require(tokenId <= _tokenIds.current(), "Token ID not in range");
+        require(_tokens[tokenId].owner == msg.sender, "Only token owner can list");
         require(msg.value == _listPrice, "Must pay for listing price");
         require(price > 0, "Token price must be positive");
 
+        if (!_tokens[tokenId].listing) {
+            _transfer(msg.sender, address(this), tokenId); // transfer to this contract for permission to sell
+        }
         _setTokenURI(tokenId, tokenURI);
-        _tokens[tokenId].owner = payable(msg.sender);
         _tokens[tokenId].price = price;
         _tokens[tokenId].listing = true;
-
-
-        _transfer(msg.sender, address(this), tokenId); // transfer to this contract for permission to sell
 
         emit TokenListing(
             tokenId,
             msg.sender,
             price
         );
+
+        return tokenId;
     }
 
     // Get all tokens of this market
