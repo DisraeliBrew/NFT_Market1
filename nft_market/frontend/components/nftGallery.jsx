@@ -14,7 +14,9 @@ export default function NFTGallery({}) {
   const { address, isConnected } = useAccount();
   const [chain, setChain] = useState(process.env.NEXT_PUBLIC_ALCHEMY_NETWORK);
   const [reqOptions,setreqOptions] = useState("owner")
+  const [endpoint,setEndpoint] = useState("eth-mainnet")
 const [request,setRequest] = useState("getNftsForOwner");
+const [apikey,setAPIKey] = useState(process.env.ALCHEMY_MAINNET_KEY)
   const changeFetchMethod = (e) => {
     setNfts()
     setPageKey()
@@ -49,36 +51,26 @@ const [request,setRequest] = useState("getNftsForOwner");
       setreqOptions("contractAddress")
     }
     try {
-    //   const res = await fetch(endpoint, {
-    //     method: "POST",
-    //     body: JSON.stringify({
-    //       address:
-    //         fetchMethod == "connectedWallet"
-    //           ? address
-    //           : walletOrCollectionAddress,
-    //       pageKey: pagekey ? pagekey : null,
-    //       chain: chain,
-    //       excludeFilter: spamFilter,
-    //     }),
-    //   }).then((res) => res.json());
     var requestOptions = {
         method: 'GET'
       };
-    // const api_key ="lgwXa7iMrjuK7hJOl_S6Wwga7AzExdxZ"
-    // const baseURL = `https://eth-mainnet.g.alchemy.com/v2/${api_key}/${request}/`;
-    // const fetchURL = `${baseURL}?contractAddress=${walletOrCollectionAddress}&withMetadata=${"true"}`;
-    // const nfts = await fetch(fetchURL,requestOptions).then(data => data.json())
-        const api_key = process.env.ALCHEMY_API_KEY//"lgwXa7iMrjuK7hJOl_S6Wwga7AzExdxZ"
-    //console.log(process.env.ALCHEMY_API_KEY);
-    // const baseURL = `https://eth-mainnet.g.alchemy.com/v2/${api_key}/"getNftsForCollection/`;
-    // const fetchURL = `${baseURL}?$contractAddress=${walletOrCollectionAddress}&withMetadata=${"true"}`;
-    // const res = await fetch(fetchURL, requestOptions).then(data => data.json())
-    const baseURL = `https://eth-mainnet.g.alchemy.com/v2/${api_key}/${request}/`;
-    const fetchURL = `${baseURL}?${reqOptions}=${walletOrCollectionAddress}&withMetadata=${"true"}`;
-    const res = await fetch(fetchURL, requestOptions).then(data => data.json())
+    let api_key = process.env.ALCHEMY_MAINNET_KEY
+    if(chain == 'MATIC_MUMBAI'){
+      setEndpoint("polygon-mumbai")
+      api_key = process.env.ALCHEMY_MATIC_KEY
+    }
+    
+    else if (chain == 'ETH_MAINNET'){
+      setEndpoint("eth-mainnet")
+      api_key = process.env.ALCHEMY_MAINNET_KEY
+    }
+
+    const baseURL = `https://${endpoint}.g.alchemy.com/v2/${api_key}/${request}/`;
+    const fetchURL = `${baseURL}?${reqOptions}=${walletOrCollectionAddress}&withMetadata=true`
+    const res = await fetch(fetchURL, requestOptions).then(data => data.json( ))
+   
     let flag;
     request == "getNFTsForOwner" ? flag = true : flag = false
-    console.log(flag);
       if (!flag) {
         console.log("here2");
         setNfts(res.nfts);
@@ -93,10 +85,11 @@ const [request,setRequest] = useState("getNftsForOwner");
     } catch (e) {
       console.log(e);
     }
-    console.log(nfts);
     setIsloading(false);
+    
   };
 
+//console.log(endpoint + " endpoint");
   useEffect(() => {
     fetchNFTs();
   }, [fetchMethod]);
@@ -136,11 +129,9 @@ const [request,setRequest] = useState("getNftsForOwner");
                 onChange={(e) => {
                   setChain(e.target.value);
                 }}
-                defaultValue={process.env.ALCHEMY_NETWORK}
+                defaultValue={Network.ETH_MAINNET}
               >
                 <option value={"ETH_MAINNET"}>Mainnet</option>
-                <option value={"MATIC_MAINNET"}>Polygon</option>
-                <option value={"ETH_GOERLI"}>Goerli</option>
                 <option value={"MATIC_MUMBAI"}>Mumbai</option>
               </select>
             </div>

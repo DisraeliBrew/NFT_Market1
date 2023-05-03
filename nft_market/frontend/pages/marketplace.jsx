@@ -1,6 +1,6 @@
-import Navbar from "./Navbar";
+import Navbar from "../components/navigation/navbar";
 import NFTCard from "../components/marketplaceCard";
-import MarketplaceJSON from "../Marketplace.json";
+import MarketplaceJSON from "../../backend/artifacts/contracts/MarketContract.sol/MarketContract.json";
 import axios from "axios";
 import { useState } from "react";
 import { GetIpfsUrlFromPinata } from "../utils";

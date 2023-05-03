@@ -71,3 +71,7 @@ package-lock.json
 yarn.lock
 
 templates/evm/core/pages/api
+
+#hardhat/solidity cache
+artifacts
+cache
