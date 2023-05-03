@@ -1,5 +1,5 @@
 import MarketContract from '../../backend/artifacts/contracts/MarketContract.sol/MarketContract.json';
-import { useAccount, useSigner } from 'wagmi';
+import { useAccount } from 'wagmi';
 import { useCallback, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { Contract } from 'alchemy-sdk';
@@ -14,8 +14,8 @@ export default function create() {
   const [txHash, setTxHash] = useState('');
   const [imageURL, setImageURL] = useState('');
   const [imageFile, setImageFile] = useState(null);
-  const [NFTName, setNFTName] = useState('');
-  const [NFTDescription, setNFTDescription] = useState('');
+  const [name, setName] = useState('');
+  const [description, setDescription] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState(false);
 
@@ -23,8 +23,8 @@ export default function create() {
   const formNotFilled = () => {
     return (
         !imageFile ||
-        !NFTName ||
-        !NFTDescription
+        !name ||
+        !description
     );
   };
 
@@ -68,33 +68,27 @@ export default function create() {
 
   // Async function to generate metadata for the NFT
   const generateMetadata = async () => {
-    // Create a new instance of a FormData object
     const formData = new FormData();
-    // Append the image file to the FormData object
     formData.append("image", imageFile);
 
-    // Send a POST request to the api/pinFileToIpfs.js to store the NFT image or video on IPFS
     const { fileURL } = await fetch("/api/pinFileToIpfs", {
       method: "POST",
       body: formData,
     }).then((res) => res.json());
 
-    // Create a metadata object with the NFT's description, image file URL, name, and attributes
     const metadata = {
-      description: NFTDescription,
+      description: description,
       image: fileURL,
-      name: NFTName,
+      name: name,
       price: '0',
       listing: false,
     };
 
-    // Send a POST request to the api/pinJsonToIpfs.js to store the NFT metadata on IPFS
     const { metadataURL } = await fetch("/api/pinJsonToIpfs", {
       method: "POST",
       body: JSON.stringify(metadata),
     }).then((res) => res.json());
 
-    // Return the metadata URL for the NFT
     return metadataURL;
   };
 
@@ -136,13 +130,13 @@ export default function create() {
               {!txHash ? (
                   <input
                       className={styles.input}
-                      value={NFTName}
-                      onChange={(e) => setNFTName(e.target.value)}
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
                       type="text"
                       placeholder="NFT Title"
                   />
               ) : (
-                  <p>{NFTName}</p>
+                  <p>{name}</p>
               )}
             </div>
             {/* Input field for NFT description */}
@@ -151,12 +145,12 @@ export default function create() {
               {!txHash ? (
                   <input
                       className={styles.input}
-                      onChange={(e) => setNFTDescription(e.target.value)}
-                      value={NFTDescription}
+                      onChange={(e) => setDescription(e.target.value)}
+                      value={description}
                       placeholder="NFT Description"
                   />
               ) : (
-                  <p>{NFTDescription}</p>
+                  <p>{description}</p>
               )}
             </div>
             <div>
