@@ -16,6 +16,11 @@ describe("Token contract", function () {
         listingPrice = await contract.getListPrice();
     });
 
+    it('Should return the next token ID to mint', async function () {
+        const tx = await contract.getNextId();
+        expect(tx).to.equal(1);
+    });
+
     it("Minted token should be owned by account", async function () {
         await contract.createToken(seller.address, uri);
         const tx = await contract.ownerOf(1);

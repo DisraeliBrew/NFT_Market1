@@ -49,6 +49,11 @@ contract MarketContract is ERC721URIStorage {
         return _listPrice;
     }
 
+    // Get the next token ID to mint
+    function getNextId() public view returns (uint256) {
+        return _tokenIds.current() + 1;
+    }
+
     // Mint a token for a specific address
     function createToken(address creator, string memory tokenURI) public returns (uint) {
         require(msg.sender == _owner, "Only contract owner can mint token");
