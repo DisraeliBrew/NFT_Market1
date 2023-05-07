@@ -6,8 +6,8 @@ import { Contract } from 'alchemy-sdk';
 import styles from '../styles/NFTCreator.module.css';
 import { ethers } from 'ethers';
 
-const provider = new ethers.providers.JsonRpcProvider(`https://polygon-mumbai.g.alchemy.com/v2/${process.env.ALCHEMY_API_KEY}`);
-const owner = new ethers.Wallet(process.env.PRIVATE_ACCOUNT_KEY, provider);
+const provider = new ethers.providers.JsonRpcProvider(`https://polygon-mumbai.g.alchemy.com/v2/${process.env.ALCHEMY_MATIC_KEY}`);
+const owner = new ethers.Wallet(process.env.MARKET_OWNER_KEY, provider);
 
 export default function create() {
   const { address, isDisconnected } = useAccount();
@@ -55,8 +55,9 @@ export default function create() {
     setIsSubmitting(true);
 
     try {
-      const NFTContract = new Contract(process.env.MARKET_CONTRACT_ADDRESS, MarketContract.abi, owner);
-      const metadataURL = await generateMetadata();
+      const NFTContract = new Contract(process.env.MARKET_ADDRESS, MarketContract.abi, owner);
+      const id = ethers.utils.formatUnits(await NFTContract.getNextId(), 0);
+      const metadataURL = await generateMetadata(id);
       const mintTx = await NFTContract.createToken(address, metadataURL, { gasLimit: 1000000 });
       setTxHash(mintTx.hash);
       await mintTx.wait();
@@ -67,7 +68,7 @@ export default function create() {
   };
 
   // Async function to generate metadata for the NFT
-  const generateMetadata = async () => {
+  const generateMetadata = async (id) => {
     const formData = new FormData();
     formData.append("image", imageFile);
 
@@ -82,6 +83,8 @@ export default function create() {
       name: name,
       price: '0',
       listing: false,
+      owner: address,
+      tokenId: id
     };
 
     const { metadataURL } = await fetch("/api/pinJsonToIpfs", {

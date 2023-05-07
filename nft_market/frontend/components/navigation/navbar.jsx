@@ -19,7 +19,7 @@ export default function Navbar() {
 				<div className={styles.links}>
 					<Link href='/create'>Mint your NFT</Link>
 					<Link href='/'>Explore NFTs</Link>
-					<Link href='/marketplace'>Browse Marketplace</Link>
+					<Link href='/marketplace'>Browse Our Marketplace</Link>
 					<ConnectButton />
 				</div>
       </nav>
