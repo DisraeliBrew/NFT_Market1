@@ -31,19 +31,19 @@ describe("Token contract", function () {
     });
 
     it("Token should be transferred to buyer on sale", async function () {
-        await contract.createToken(seller.address, uri, { value: listingPrice });
+        await contract.createToken(seller.address, uri);
         await contract.connect(seller).listToken(1, uri, nftPrice, { value: listingPrice });
-        await contract.connect(buyer).executeSale(1, { value: nftPrice});
+        await contract.connect(buyer).executeSale(1, uri, { value: nftPrice});
 
         const tx = await contract.ownerOf(1);
         expect(tx).to.equal(buyer.address);
     });
 
     it("Should get all tokens in an array", async function () {
-        await contract.createToken(seller.address, uri, { value: listingPrice });
+        await contract.createToken(seller.address, uri);
         await contract.connect(seller).listToken(1, uri, nftPrice, { value: listingPrice });
-        await contract.connect(buyer).executeSale(1, { value: nftPrice});
-        await contract.createToken(seller.address, uri, { value: listingPrice });
+        await contract.connect(buyer).executeSale(1, uri, { value: nftPrice});
+        await contract.createToken(seller.address, uri);
 
         const tx = await contract.getAllTokens();
         expect(tx.length).to.equal(2);

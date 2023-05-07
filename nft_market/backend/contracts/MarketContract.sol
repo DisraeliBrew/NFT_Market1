@@ -50,7 +50,7 @@ contract MarketContract is ERC721URIStorage {
     }
 
     // Mint a token for a specific address
-    function createToken(address creator, string memory tokenURI) public payable returns (uint) {
+    function createToken(address creator, string memory tokenURI) public returns (uint) {
         require(msg.sender == _owner, "Only contract owner can mint token");
         _tokenIds.increment(); // first token id == 1
         uint256 newTokenId = _tokenIds.current();
@@ -104,7 +104,7 @@ contract MarketContract is ERC721URIStorage {
     }
 
     // Buy a token
-    function executeSale(uint256 tokenId) public payable {
+    function executeSale(uint256 tokenId, string memory tokenURI) public payable {
         require(tokenId <= _tokenIds.current(), "Token ID not in range");
 
         uint price = _tokens[tokenId].price;
@@ -114,6 +114,7 @@ contract MarketContract is ERC721URIStorage {
         _tokens[tokenId].listing = false;
         _tokens[tokenId].owner = payable(msg.sender);
 
+        _setTokenURI(tokenId, tokenURI);
         _transfer(address(this), msg.sender, tokenId);
         approve(address(this), tokenId);
 
