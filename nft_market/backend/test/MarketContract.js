@@ -29,7 +29,7 @@ describe("Token contract", function () {
 
     it("Listing should be transferred to contract", async function () {
         await contract.createToken(seller.address, uri);
-        await contract.connect(seller).listToken(1, uri, nftPrice, { value: listingPrice });
+        await contract.connect(seller).listToken(1, '/new', nftPrice, { value: listingPrice });
 
         const tx = await contract.ownerOf(1);
         expect(tx).to.equal(contract.address);
