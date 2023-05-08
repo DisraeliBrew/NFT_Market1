@@ -78,10 +78,6 @@ export default function NftCard({ nft }) {
     f();
   }, [signer]);
 
-  useEffect(() => {
-    console.log(metadata);
-  }, [metadata]);
-
   return (
       <div className={styles.card_container}>
         <div className={styles.image_container}>
