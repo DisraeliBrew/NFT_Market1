@@ -69,8 +69,8 @@ export default function NftCard({ nft }) {
         const NFTContract = new Contract(process.env.MARKET_ADDRESS, MarketContract.abi, signer);
         const id = ethers.BigNumber.from(nft.id.tokenId);
         const tokenUri = await NFTContract.tokenURI(id);
-        console.log(tokenUri);
-        const res = await axios.get(tokenUri);
+        const replaced = tokenUri.replace('https://gateway.pinata.cloud', process.env.LOCAL_IPFS_GATEWAY);
+        const res = await axios.get(replaced);
         const data = await res.data;
         setMetadata(data);
       }
