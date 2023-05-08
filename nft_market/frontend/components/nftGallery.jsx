@@ -22,12 +22,11 @@ const [apikey,setAPIKey] = useState(process.env.ALCHEMY_MAINNET_KEY)
     setPageKey()
     switch (e.target.value) {
       case "wallet":
-        setWalletOrCollectionAddress("vitalik.eth");
-
+        setWalletOrCollectionAddress("");
         break;
       case "collection":
         setWalletOrCollectionAddress(
-          "0x8a90CAb2b38dba80c64b7734e58Ee1dB38B8992e"
+          process.env.MARKET_ADDRESS
         );
         break;
       case "connectedWallet":
